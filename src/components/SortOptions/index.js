@@ -7,7 +7,7 @@ const SortOptions = ({onSortOrderChange, onSortChange } ) => {
 
         <img
             className="website-logo"
-            src="/pokemon.png"
+            src="./pokemon.png"
             alt="Logo"
           />
     <hr className="hr" />
