@@ -4,16 +4,18 @@ import PokemonStore from './components/PokemonStore';
 import PokemonInDetail from './components/PokemonInDetail';
 import FavoritePokemons from './components/FavoritePokemons';
 import './App.css';
+import { HashRouter } from 'react-router-dom';
+
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
         <Route exact path="/" component={PokemonStore} />
         <Route path="/pokemon/:id" component={PokemonInDetail} />
         <Route exact path="/favorites" component={FavoritePokemons} />
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
