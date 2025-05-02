@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import { TailSpin } from 'react-loader-spinner'
+import ReactPaginate from 'react-paginate'
+
 
 import PokemonCard from '../PokemonCard'
+import SortOptions from '../SortOptions'
+import Header from '../Header'
 import './index.css'
 
 class PokemonStore extends Component {
@@ -11,6 +15,10 @@ class PokemonStore extends Component {
     searchInput: '',
     filterType: 'All',
     types: [],
+    currentPage: 0,
+    itemsPerPage: 10,
+    sortOrder : '',
+    sortBy : '',
   }
 
   componentDidMount() {
@@ -21,8 +29,6 @@ class PokemonStore extends Component {
     try {
       const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=150')
       const data = await response.json()
-
-      console.log(data)
       const detailedData = await Promise.all(
         data.results.map(async pokemon => {
           const res = await fetch(pokemon.url)
@@ -42,29 +48,69 @@ class PokemonStore extends Component {
   }
 
   onSearchChange = event => {
-    this.setState({ searchInput: event.target.value })
+    this.setState({ searchInput: event.target.value, currentPage: 0 })
   }
 
   onFilterChange = event => {
-    this.setState({ filterType: event.target.value })
+    this.setState({ filterType: event.target.value, currentPage: 0 })
+  }
+
+  onItemsPerPageChange = event => {
+    this.setState({ itemsPerPage: parseInt(event.target.value), currentPage: 0 })
+  }
+
+  handlePageClick = ({ selected }) => {
+    this.setState({ currentPage: selected })
+  }
+
+  onSortOrderChange = event => {
+    this.setState({ sortOrder: event.target.value, currentPage: 0 })
+  }
+
+  onSortChange = event => {
+    this.setState({ sortBy: event.target.value, currentPage: 0 })
   }
 
   getFilteredPokemons = () => {
-    const { pokemons, searchInput, filterType } = this.state
-    return pokemons.filter(pokemon => {
-      const matchesName = pokemon.name.toLowerCase().includes(searchInput.toLowerCase())
-      const matchesType = filterType === 'All' || pokemon.types.some(t => t.type.name === filterType)
-      return matchesName && matchesType
-    })
+    const { pokemons, searchInput, filterType, sortOrder,sortBy } = this.state
+
+      let filtered = pokemons.filter(pokemon => {
+        const matchesName = pokemon.name.toLowerCase().includes(searchInput.toLowerCase())
+        const matchesType = filterType === 'All' || pokemon.types.some(t => t.type.name === filterType)
+        return matchesName && matchesType
+      })
+
+      if (sortOrder === 'asc') {
+        filtered.sort((a, b) => a.id - b.id)
+      } else if (sortOrder === 'desc') {
+        filtered.sort((a, b) => b.id - a.id)
+      }else if (sortBy === 'name-asc') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name))
+      } else if (sortBy === 'name-desc') {
+        filtered.sort((a, b) => b.name.localeCompare(a.name))
+      }
+
+      return filtered
   }
 
   render() {
-    const { isLoading, searchInput, filterType, types } = this.state
+    const { isLoading, searchInput, filterType, types, currentPage, itemsPerPage } = this.state
     const filteredPokemons = this.getFilteredPokemons()
 
+    const startIndex = currentPage * itemsPerPage
+    const selectedPokemons = filteredPokemons.slice(startIndex, startIndex + itemsPerPage)
+    const pageCount = Math.ceil(filteredPokemons.length / itemsPerPage)
+
     return (
+      <>
+      <Header/>
+    <div className='bg-container'>
+        <SortOptions
+          onSortOrderChange={this.onSortOrderChange}
+          onSortChange={this.onSortChange}
+        />
       <div className="app-container">
-        <h1 className="app-title">PokeNova Explorer</h1>
+        
         <div className="controls">
           <input
             type="search"
@@ -73,37 +119,48 @@ class PokemonStore extends Component {
             onChange={this.onSearchChange}
             className="search-input"
           />
+
           <select value={filterType} onChange={this.onFilterChange} className="filter-dropdown">
             {types.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <select value={itemsPerPage} onChange={this.onItemsPerPageChange} className="filter-dropdown">
+            {[10, 20, 50].map(count => (
+              <option key={count} value={count}>{count} / page</option>
             ))}
           </select>
         </div>
+
         {isLoading ? (
           <div className="loader-container">
-            <TailSpin
-  height="50"
-  width="50"
-  color="#00BFFF"
-  ariaLabel="loading"
-  wrapperStyle={{}}
-  wrapperClass=""
-  visible={true}
-/>
-
+            <TailSpin height="50" width="50" color="#00BFFF" ariaLabel="loading" visible={true} />
           </div>
-        ) : filteredPokemons.length === 0 ? (
+        ) : selectedPokemons.length === 0 ? (
           <p className="empty-message">No Pokémon found.</p>
         ) : (
-          <div className="pokemon-list">
-            {filteredPokemons.map(pokemon => (
-              <PokemonCard key={pokemon.id} pokemon={pokemon} />
-            ))}
-          </div>
+          <>
+            <div className="pokemon-list">
+              {selectedPokemons.map(pokemon => (
+                <PokemonCard key={pokemon.id} pokemon={pokemon} />
+              ))}
+            </div>
+            <ReactPaginate
+              previousLabel={'← Previous'}
+              nextLabel={'Next →'}
+              pageCount={pageCount}
+              onPageChange={this.handlePageClick}
+              containerClassName={'pagination'}
+              activeClassName={'active'}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={1}
+            />
+          </>
         )}
       </div>
+    </div>
+    </>
     )
   }
 }

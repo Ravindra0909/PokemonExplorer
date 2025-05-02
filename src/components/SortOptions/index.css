@@ -1,0 +1,13 @@
+.fav-btn{
+    background-color: #008CBA;
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+    font-family: roboto;
+    border-radius: 15px;
+    border: 0px;
+}
+.website-logo{
+    height: 180px;
+    width: 300px;
+}

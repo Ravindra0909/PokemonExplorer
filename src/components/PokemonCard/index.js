@@ -1,10 +1,12 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
 import './index.css'
 
 const PokemonCard = ({ pokemon }) => {
   const { id, name, sprites, types } = pokemon
   return (
-    <div className="pokemon-card">
+    <Link to={`/pokemon/${id}`} className="pokemon-card-link">
+    <div className={`pokemon-card ${types[0].type.name}`}>
       <img src={sprites.front_default} alt={name} className="pokemon-image" />
       <h3 className="pokemon-name">{name.charAt(0).toUpperCase() + name.slice(1)}</h3>
       <p className="pokemon-id">#{id}</p>
@@ -16,6 +18,7 @@ const PokemonCard = ({ pokemon }) => {
         ))}
       </div>
     </div>
+    </Link>
   )
 }
 

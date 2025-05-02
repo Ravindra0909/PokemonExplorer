@@ -39,4 +39,71 @@
     font-size: 1.2rem;
     color: #555;
   }
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
   
+  .page-btn {
+    margin: 0 4px;
+    padding: 6px 12px;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .page-btn.active {
+    background-color: #4caf50;
+    color: white;
+  }
+  .pagination {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  .pagination li {
+    margin: 0 5px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #eee;
+  }
+  
+  .pagination .active {
+    background-color: #00BFFF;
+    color: white;
+  }
+  .hr {
+    width: 300px;
+    text-align: left;
+    border: 1px solid #64748b;
+  }
+  .sorting-filtering-options{
+    padding-right: 40px;
+    width: 250px;
+    margin: 30px;
+    font-family: roboto;
+    font-size: 15px;
+    color:#2c364c;
+  }
+  .bg-container{
+    display: flex;
+  }
+  .id-input{
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .para-id{
+    font-family: roboto;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .id-radio{
+    padding-right: 10px;
+    margin: 10px;
+  }
